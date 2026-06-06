@@ -1,0 +1,12 @@
+// Cloudflare Workers 배포 설정 (정적 자산 호스팅).
+// 대시보드의 deploy command `npx wrangler deploy`가 이 파일을 읽어
+// dist/ 정적 빌드 결과를 배포한다.
+{
+	"name": "blog",
+	"compatibility_date": "2026-06-06",
+	"assets": {
+		"directory": "./dist",
+		// /notes 와 /notes/ 를 같은 페이지로 처리 (Astro 기본 동작과 일치)
+		"html_handling": "auto-trailing-slash"
+	}
+}
