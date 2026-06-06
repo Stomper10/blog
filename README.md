@@ -79,13 +79,13 @@ npm run build    # 정적 빌드 → dist/
 npm run preview  # 빌드 결과 미리보기
 ```
 
-## 배포 (Cloudflare Pages)
+## 배포 (Cloudflare Workers)
 
-1. GitHub 저장소 생성 후 push.
-2. Cloudflare 대시보드 → Workers & Pages → Pages → 저장소 연결.
-   - Framework preset: **Astro**
+1. Cloudflare 대시보드 → Workers & Pages → 저장소(`Stomper10/blog`) 가져오기.
    - Build command: `npm run build`
-   - Build output directory: `dist`
+   - Deploy command: `npx wrangler deploy` (저장소의 `wrangler.jsonc`가 `dist/`를 정적 자산으로 배포)
+   - "Builds for non-production branches" 체크 시 브랜치 push마다 프리뷰 URL 생성 (번역 검수에 유용)
+2. 이후 `main`에 push할 때마다 자동 빌드·배포된다.
 3. 배포 후 `astro.config.mjs`의 `site`를 실제 도메인으로 변경 (sitemap·RSS·canonical URL에 쓰임).
 
 ## 댓글 (giscus)
