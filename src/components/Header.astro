@@ -28,7 +28,19 @@ const navItems = [
 		<div class="internal-links">
 			{navItems.map((item) => <HeaderLink href={localizePath(item.href, lang)}>{item.label}</HeaderLink>)}
 		</div>
-		<LanguageToggle translationUrl={translationUrl} />
+		<div class="nav-actions">
+			<a class="search-link" href={localizePath('/search/', lang)} aria-label={t('nav.search')}>
+				<svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none"
+					><path
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-width="2"
+						d="m21 21-4.35-4.35M17 10.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z"
+					></path></svg
+				>
+			</a>
+			<LanguageToggle translationUrl={translationUrl} />
+		</div>
 	</nav>
 </header>
 <style>
@@ -64,6 +76,21 @@ const navItems = [
 	}
 	nav :global(.lang-toggle) {
 		padding: 0.25em 0.75em;
+	}
+	.nav-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+	}
+	.search-link {
+		display: flex;
+		align-items: center;
+		padding: 0.25em;
+		color: rgb(var(--gray-dark));
+		border-bottom: none;
+	}
+	.search-link:hover {
+		color: var(--accent);
 	}
 	@media (max-width: 720px) {
 		.internal-links a {

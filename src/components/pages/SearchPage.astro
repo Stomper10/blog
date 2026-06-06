@@ -1,0 +1,38 @@
+---
+import Search from 'astro-pagefind/components/Search.astro';
+import { SITE_TITLE } from '../../consts';
+import type { Lang } from '../../i18n/ui';
+import { useTranslations } from '../../i18n/utils';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Pagefind는 <html lang>을 보고 언어별 인덱스를 따로 만들기 때문에
+// ko 검색 페이지에선 ko 글만, en 페이지에선 en 글만 검색된다.
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const koTranslations = {
+	placeholder: '검색어를 입력하세요',
+	clear_search: '지우기',
+	load_more: '더 보기',
+	zero_results: '"[SEARCH_TERM]"에 대한 결과가 없습니다',
+	many_results: '"[SEARCH_TERM]" 검색 결과 [COUNT]건',
+	one_result: '"[SEARCH_TERM]" 검색 결과 [COUNT]건',
+	searching: '검색 중…',
+};
+---
+
+<BaseLayout title={`${t('nav.search')} | ${SITE_TITLE}`} description={t('nav.search')}>
+	<h1>{t('nav.search')}</h1>
+	<Search
+		id="search"
+		className="pagefind-ui"
+		uiOptions={{
+			showImages: false,
+			translations: lang === 'ko' ? koTranslations : {},
+		}}
+	/>
+</BaseLayout>

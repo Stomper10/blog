@@ -13,6 +13,7 @@ Astro + MDX, Cloudflare Pages 배포.
 | `/projects` | 사이드 프로젝트 |
 | `/writing` | 야구 · 영화 · 여행 · 운동 등 일상 글 |
 | `/cv` | 이력서 |
+| `/search` | 전문 검색 (Pagefind — 빌드 시 인덱스 생성, ko/en 분리) |
 
 ## 다국어 모델
 
