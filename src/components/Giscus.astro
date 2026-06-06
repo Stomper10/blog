@@ -1,0 +1,43 @@
+---
+import { GISCUS } from '../consts';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+// giscus는 페이지 경로(pathname) 기준으로 Discussion을 매핑한다.
+// ko/en 버전이 서로 다른 경로이므로 댓글 스레드도 언어별로 분리된다.
+const enabled = GISCUS.repo.length > 0;
+---
+
+{
+	enabled && (
+		<section class="giscus-wrapper">
+			<script
+				is:inline
+				src="https://giscus.app/client.js"
+				data-repo={GISCUS.repo}
+				data-repo-id={GISCUS.repoId}
+				data-category={GISCUS.category}
+				data-category-id={GISCUS.categoryId}
+				data-mapping="pathname"
+				data-strict="0"
+				data-reactions-enabled="1"
+				data-emit-metadata="0"
+				data-input-position="bottom"
+				data-theme="preferred_color_scheme"
+				data-lang={lang}
+				crossorigin="anonymous"
+				async
+			/>
+		</section>
+	)
+}
+
+<style>
+	.giscus-wrapper {
+		margin-top: 3rem;
+	}
+</style>

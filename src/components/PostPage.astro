@@ -1,0 +1,18 @@
+---
+import { render } from 'astro:content';
+import PostLayout from '../layouts/PostLayout.astro';
+import type { PostEntry } from '../i18n/utils';
+
+// 각 섹션의 [...slug].astro가 공유하는 글 상세 페이지 본체.
+interface Props {
+	post: PostEntry;
+	translationUrl: string;
+}
+
+const { post, translationUrl } = Astro.props;
+const { Content } = await render(post);
+---
+
+<PostLayout post={post} translationUrl={translationUrl}>
+	<Content />
+</PostLayout>

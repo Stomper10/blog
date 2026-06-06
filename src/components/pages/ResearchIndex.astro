@@ -1,0 +1,100 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { SITE_TITLE } from '../../consts';
+import type { Lang } from '../../i18n/ui';
+import { getPosts, postUrl, useTranslations } from '../../i18n/utils';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const entries = (await getPosts('research', lang)) as CollectionEntry<'research'>[];
+const published = entries.filter((entry) => entry.data.status === 'published');
+const inProgress = entries.filter((entry) => entry.data.status === 'in-progress');
+---
+
+<BaseLayout
+	title={`${t('section.research')} | ${SITE_TITLE}`}
+	description={t('section.research.description')}
+>
+	<h1>{t('section.research')}</h1>
+	<p class="section-description">{t('section.research.description')}</p>
+
+	{
+		inProgress.length > 0 && (
+			<section>
+				<h2>{t('section.research.inProgress')}</h2>
+				<ul class="pub-list">
+					{inProgress.map((entry) => (
+						<li>
+							<a href={postUrl('research', entry)}>{entry.data.title}</a>
+							<p class="meta">{entry.data.description}</p>
+						</li>
+					))}
+				</ul>
+			</section>
+		)
+	}
+
+	{
+		published.length > 0 && (
+			<section>
+				<h2>{t('section.research.published')}</h2>
+				<ul class="pub-list">
+					{published.map((entry) => (
+						<li>
+							<a href={postUrl('research', entry)}>{entry.data.title}</a>
+							<p class="meta">
+								{entry.data.authors.join(', ')}
+								{entry.data.venue && <span class="venue"> · {entry.data.venue}</span>}
+							</p>
+							<p class="links">
+								{entry.data.links.paper && <a href={entry.data.links.paper}>[paper]</a>}
+								{entry.data.links.code && <a href={entry.data.links.code}>[code]</a>}
+								{entry.data.links.slides && <a href={entry.data.links.slides}>[slides]</a>}
+							</p>
+						</li>
+					))}
+				</ul>
+			</section>
+		)
+	}
+</BaseLayout>
+
+<style>
+	.section-description {
+		color: rgb(var(--gray));
+		margin-bottom: 2rem;
+	}
+	.pub-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+	.pub-list > li > a {
+		font-weight: bold;
+		text-decoration: none;
+	}
+	.meta {
+		margin: 0.25rem 0 0;
+		font-size: 0.9em;
+		color: rgb(var(--gray-dark));
+	}
+	.venue {
+		font-style: italic;
+	}
+	.links {
+		margin: 0.25rem 0 0;
+		font-size: 0.9em;
+	}
+	.links a {
+		margin-right: 0.5rem;
+	}
+</style>

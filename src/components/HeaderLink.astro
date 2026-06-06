@@ -1,0 +1,29 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'a'>;
+
+const { href, class: className, ...props } = Astro.props;
+
+// /en 프리픽스를 벗긴 경로끼리 비교해 ko/en 양쪽에서 같은 메뉴가 활성화되게 한다.
+const normalize = (path: string) =>
+	(path.replace(/^\/en(?=\/|$)/, '') || '/').replace(/\/$/, '') || '/';
+
+const pathname = normalize(Astro.url.pathname);
+const target = normalize(String(href));
+const isActive = target === '/' ? pathname === '/' : pathname.startsWith(target);
+---
+
+<a href={href} class:list={[className, { active: isActive }]} {...props}>
+	<slot />
+</a>
+<style>
+	a {
+		display: inline-block;
+		text-decoration: none;
+	}
+	a.active {
+		font-weight: bolder;
+		text-decoration: underline;
+	}
+</style>

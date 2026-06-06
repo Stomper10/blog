@@ -1,0 +1,112 @@
+---
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import type { Lang } from '../../i18n/ui';
+import { getPosts, postUrl, useTranslations, type PostCollection } from '../../i18n/utils';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FormattedDate from '../FormattedDate.astro';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+// 노트·프로젝트·일상 글을 한데 모아 최신순 5개를 보여준다.
+const sections: PostCollection[] = ['notes', 'projects', 'writing'];
+const recent = (
+	await Promise.all(
+		sections.map(async (collection) =>
+			(await getPosts(collection, lang)).map((post) => ({ collection, post })),
+		),
+	)
+)
+	.flat()
+	.sort((a, b) => b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf())
+	.slice(0, 5);
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION[lang]}>
+	<section class="intro">
+		{
+			lang === 'ko' ? (
+				<>
+					<h1>안녕하세요 👋</h1>
+					<p>
+						{/* TODO: 자기소개로 교체 */}
+						연구하는 사람입니다. 이곳은 논문과 프로젝트, 그리고 야구·영화·여행·운동에 대한
+						기록이 함께 사는 디지털 홈입니다.
+					</p>
+				</>
+			) : (
+				<>
+					<h1>Hi, I'm — 👋</h1>
+					<p>
+						{/* TODO: replace with your introduction */}
+						I'm a researcher. This is my digital home where papers, projects, and writing on
+						baseball, movies, travel, and fitness live together.
+					</p>
+				</>
+			)
+		}
+	</section>
+
+	<section class="recent">
+		<h2>{t('home.recent')}</h2>
+		<ul>
+			{
+				recent.map(({ collection, post }) => (
+					<li>
+						<a href={postUrl(collection, post)}>
+							<span class="section-tag">{t(`section.${collection}`)}</span>
+							<span class="title">{post.data.title}</span>
+							<span class="date">
+								<FormattedDate date={post.data.pubDate} />
+							</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+</BaseLayout>
+
+<style>
+	.intro h1 {
+		margin-bottom: 0.5em;
+	}
+	.recent {
+		margin-top: 3rem;
+	}
+	.recent ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	.recent a {
+		display: flex;
+		align-items: baseline;
+		gap: 0.75rem;
+		text-decoration: none;
+	}
+	.section-tag {
+		flex-shrink: 0;
+		font-size: 0.8em;
+		color: var(--accent);
+	}
+	.title {
+		color: rgb(var(--black));
+	}
+	.recent a:hover .title {
+		color: rgb(var(--accent));
+	}
+	.date {
+		margin-left: auto;
+		flex-shrink: 0;
+		font-size: 0.85em;
+		color: rgb(var(--gray));
+	}
+</style>

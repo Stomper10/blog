@@ -1,0 +1,33 @@
+---
+import { SITE_TITLE } from '../../consts';
+import type { Lang } from '../../i18n/ui';
+import { getPosts, useTranslations, type PostCollection } from '../../i18n/utils';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../PostList.astro';
+
+// notes / projects / writing 인덱스가 공유하는 목록 페이지.
+interface Props {
+	lang: Lang;
+	collection: Exclude<PostCollection, 'research'>;
+}
+
+const { lang, collection } = Astro.props;
+const t = useTranslations(lang);
+const posts = await getPosts(collection, lang);
+---
+
+<BaseLayout
+	title={`${t(`section.${collection}`)} | ${SITE_TITLE}`}
+	description={t(`section.${collection}.description`)}
+>
+	<h1>{t(`section.${collection}`)}</h1>
+	<p class="section-description">{t(`section.${collection}.description`)}</p>
+	<PostList collection={collection} posts={posts} />
+</BaseLayout>
+
+<style>
+	.section-description {
+		color: rgb(var(--gray));
+		margin-bottom: 2rem;
+	}
+</style>

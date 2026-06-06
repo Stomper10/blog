@@ -1,0 +1,12 @@
+---
+import PostPage from '../../../components/PostPage.astro';
+import { getStaticPathsForLang } from '../../../i18n/utils';
+
+export function getStaticPaths() {
+	return getStaticPathsForLang('notes', 'en');
+}
+
+const { post, translationUrl } = Astro.props;
+---
+
+<PostPage post={post} translationUrl={translationUrl} />

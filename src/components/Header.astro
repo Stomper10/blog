@@ -1,0 +1,74 @@
+---
+import { SITE_TITLE } from '../consts';
+import { getLangFromUrl, localizePath, useTranslations } from '../i18n/utils';
+import HeaderLink from './HeaderLink.astro';
+import LanguageToggle from './LanguageToggle.astro';
+
+interface Props {
+	/** 글 페이지에서 translationKey로 계산한 반대 언어 URL (LanguageToggle로 전달) */
+	translationUrl?: string;
+}
+
+const { translationUrl } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const navItems = [
+	{ href: '/research/', label: t('nav.research') },
+	{ href: '/notes/', label: t('nav.notes') },
+	{ href: '/projects/', label: t('nav.projects') },
+	{ href: '/writing/', label: t('nav.writing') },
+	{ href: '/cv/', label: t('nav.cv') },
+];
+---
+
+<header>
+	<nav>
+		<h2><a href={localizePath('/', lang)}>{SITE_TITLE}</a></h2>
+		<div class="internal-links">
+			{navItems.map((item) => <HeaderLink href={localizePath(item.href, lang)}>{item.label}</HeaderLink>)}
+		</div>
+		<LanguageToggle translationUrl={translationUrl} />
+	</nav>
+</header>
+<style>
+	header {
+		margin: 0;
+		padding: 0 1em;
+		background: white;
+		box-shadow: 0 2px 8px rgba(var(--black), 5%);
+	}
+	h2 {
+		margin: 0;
+		font-size: 1em;
+	}
+
+	h2 a,
+	h2 a.active {
+		text-decoration: none;
+	}
+	nav {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	nav a {
+		padding: 1em 0.5em;
+		color: var(--black);
+		border-bottom: 4px solid transparent;
+		text-decoration: none;
+	}
+	nav a.active {
+		text-decoration: none;
+		border-bottom-color: var(--accent);
+	}
+	nav :global(.lang-toggle) {
+		padding: 0.25em 0.75em;
+	}
+	@media (max-width: 720px) {
+		.internal-links a {
+			padding: 1em 0.3em;
+			font-size: 0.9em;
+		}
+	}
+</style>

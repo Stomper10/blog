@@ -1,0 +1,45 @@
+---
+import { languages, otherLang } from '../i18n/ui';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+interface Props {
+	/**
+	 * 반대 언어 버전의 URL.
+	 * 글 페이지는 translationKey로 찾은 짝의 URL을 내려주고,
+	 * 생략하면 /en 프리픽스를 토글한 대칭 경로를 쓴다 (인덱스·정적 페이지용).
+	 */
+	translationUrl?: string;
+}
+
+const lang = getLangFromUrl(Astro.url);
+const target = otherLang(lang);
+const t = useTranslations(lang);
+
+const symmetricPath =
+	lang === 'ko'
+		? `/en${Astro.url.pathname}`
+		: Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+
+const href = Astro.props.translationUrl ?? symmetricPath;
+---
+
+<a class="lang-toggle" href={href} aria-label={t('toggle.label')}>
+	{languages[target]}
+</a>
+
+<style>
+	.lang-toggle {
+		display: inline-block;
+		padding: 0.25em 0.75em;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 999px;
+		font-size: 0.85em;
+		color: rgb(var(--gray-dark));
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.lang-toggle:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+</style>

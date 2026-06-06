@@ -1,0 +1,40 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { otherLang } from '../i18n/ui';
+import { getLangFromUrl } from '../i18n/utils';
+
+interface Props {
+	title: string;
+	description: string;
+	/** 글 페이지에서 translationKey로 계산한 반대 언어 URL */
+	translationUrl?: string;
+}
+
+const { title, description, translationUrl } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<BaseHead title={title} description={description} />
+		{
+			translationUrl && (
+				<link
+					rel="alternate"
+					hreflang={otherLang(lang)}
+					href={new URL(translationUrl, Astro.site)}
+				/>
+			)
+		}
+	</head>
+	<body>
+		<Header translationUrl={translationUrl} />
+		<main>
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>
