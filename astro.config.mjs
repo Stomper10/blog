@@ -6,8 +6,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	// TODO: Cloudflare Pages 배포 후 실제 도메인으로 변경
-	site: 'https://example.com',
+	site: 'https://blog.jwy4888.workers.dev',
 	// 한국어가 기본(프리픽스 없음), 영어는 /en/ 아래로 라우팅된다.
 	// ko: /notes/foo  ↔  en: /en/notes/foo
 	i18n: {
