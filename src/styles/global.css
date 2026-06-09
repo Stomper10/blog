@@ -1,125 +1,490 @@
 /*
-  The CSS in this style tag is based off of Bear Blog's default CSS.
-  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
-  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
- */
+  Design tokens & base styles ported from the "astro-tone" theme
+  (https://github.com/hanityx/astro-tone, MIT) and adapted for this
+  bilingual (ko/en) Astro blog. Apple-ish quiet defaults, teal accent,
+  light/dark via `data-theme` attribute with prefers-color-scheme fallback.
+*/
 
+/* ============================================================
+   1. TYPOGRAPHY + TOKENS
+   ============================================================ */
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
+	/* Font families — Pretendard (loaded via CDN in BaseHead) reads well in Korean. */
+	--font-sans:
+		'Pretendard Variable', Pretendard, system-ui, 'Segoe UI', Roboto,
+		'Helvetica Neue', 'Apple SD Gothic Neo', 'Malgun Gothic', Arial, sans-serif;
+	--font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+	/* Type scale */
+	--text-large-title: 2.125rem;
+	--text-title-1: 1.75rem;
+	--text-title-2: 1.375rem;
+	--text-title-3: 1.25rem;
+	--text-headline: 1.0625rem;
+	--text-body: 1.125rem;
+	--text-callout: 1rem;
+	--text-subheadline: 0.9375rem;
+	--text-footnote: 0.8125rem;
+	--text-caption-1: 0.75rem;
+	--text-caption-2: 0.6875rem;
+
+	/* Weights */
+	--weight-regular: 400;
+	--weight-medium: 500;
+	--weight-semibold: 600;
+	--weight-bold: 700;
+
+	/* Line heights */
+	--leading-tight: 1.2;
+	--leading-snug: 1.375;
+	--leading-normal: 1.5;
+	--leading-relaxed: 1.625;
+
+	/* Letter spacing */
+	--tracking-tight: -0.022em;
+	--tracking-normal: 0em;
+	--tracking-wide: 0.025em;
+
+	/* Brand + state colors */
+	--color-accent: #003831;
+	--color-success: #34c759;
+	--color-warning: #ff9500;
+	--color-blue: var(--color-accent);
+	--color-link: var(--color-accent);
+
+	/* Label colors */
+	--label-primary: rgba(0, 0, 0, 1);
+	--label-secondary: rgba(24, 31, 36, 0.72);
+	--label-tertiary: rgba(24, 31, 36, 0.62);
+	--label-quaternary: rgba(24, 31, 36, 0.34);
+
+	/* Backgrounds */
+	--bg-primary: #ffffff;
+	--bg-secondary: #f7fbfd;
+	--bg-tertiary: #ffffff;
+
+	/* Fills (tinted with the accent) */
+	--fill-primary: rgba(0, 56, 49, 0.12);
+	--fill-secondary: rgba(0, 56, 49, 0.09);
+	--fill-tertiary: rgba(0, 56, 49, 0.06);
+	--fill-quaternary: rgba(0, 56, 49, 0.04);
+
+	/* Separators */
+	--separator: rgba(60, 60, 67, 0.29);
+	--separator-opaque: #c6c6c8;
+
+	/* Spacing — 4pt grid */
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-5: 1.25rem;
+	--space-6: 1.5rem;
+	--space-8: 2rem;
+	--space-10: 2.5rem;
+	--space-12: 3rem;
+	--space-16: 4rem;
+	--space-20: 5rem;
+	--space-24: 6rem;
+
+	/* Radii */
+	--radius-xs: 4px;
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 12px;
+	--radius-xl: 20px;
+	--radius-full: 9999px;
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.06);
+	--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.08);
+	--shadow-lg:
+		0 4px 16px rgba(0, 0, 0, 0.08), 0 8px 32px rgba(0, 0, 0, 0.1),
+		0 16px 48px rgba(0, 0, 0, 0.06);
+
+	/* Motion */
+	--ease-out: cubic-bezier(0, 0, 0.58, 1);
+	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--duration-fast: 150ms;
+	--duration-normal: 250ms;
+	--duration-slow: 400ms;
+
+	/* Layout */
+	--max-width-content: 784px;
+	--max-width-wide: 880px;
+	--nav-height: 52px;
+
+	/* ---- Legacy aliases (theme-aware) ----
+	   Older components reference these names; mapping them here means those
+	   components automatically respond to dark mode without rewrites. */
+	--accent: var(--color-accent);
+	--accent-dark: #00251f;
 	--black: 15, 18, 25;
-	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
-	--gray-dark: 34, 41, 57;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
-	--box-shadow:
-		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
-		0 16px 32px rgba(var(--gray), 33%);
+	--gray: 92, 104, 120;
+	--gray-dark: 50, 60, 72;
+	--gray-light: 220, 228, 233;
+	--gray-gradient: var(--bg-secondary), var(--bg-primary);
+	--box-shadow: var(--shadow-md);
 }
+
+/* Dark mode — system preference unless explicitly forced to light. */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--color-accent: #efb21e;
+		--color-success: #30d158;
+		--color-warning: #ff9f0a;
+		--color-blue: var(--color-accent);
+
+		--label-primary: rgba(255, 255, 255, 1);
+		--label-secondary: rgba(239, 247, 250, 0.76);
+		--label-tertiary: rgba(239, 247, 250, 0.56);
+		--label-quaternary: rgba(239, 247, 250, 0.38);
+
+		--bg-primary: #000000;
+		--bg-secondary: #0e1413;
+		--bg-tertiary: #131b19;
+
+		--fill-primary: rgba(239, 178, 30, 0.18);
+		--fill-secondary: rgba(239, 178, 30, 0.13);
+		--fill-tertiary: rgba(239, 178, 30, 0.09);
+		--fill-quaternary: rgba(239, 178, 30, 0.06);
+
+		--separator: rgba(84, 84, 88, 0.65);
+		--separator-opaque: #38383a;
+
+		--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.3);
+		--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.4);
+		--shadow-lg:
+			0 4px 16px rgba(0, 0, 0, 0.4), 0 8px 32px rgba(0, 0, 0, 0.5),
+			0 16px 48px rgba(0, 0, 0, 0.3);
+
+		--accent-dark: #f5c54a;
+		--black: 240, 247, 250;
+		--gray: 150, 165, 175;
+		--gray-dark: 205, 218, 224;
+		--gray-light: 40, 48, 52;
+	}
+}
+
+/* Forced dark (JS toggle) */
+[data-theme='dark'] {
+	--color-accent: #efb21e;
+	--color-success: #30d158;
+	--color-warning: #ff9f0a;
+	--color-blue: var(--color-accent);
+
+	--label-primary: rgba(255, 255, 255, 1);
+	--label-secondary: rgba(239, 247, 250, 0.76);
+	--label-tertiary: rgba(239, 247, 250, 0.56);
+	--label-quaternary: rgba(239, 247, 250, 0.38);
+
+	--bg-primary: #000000;
+	--bg-secondary: #0e1413;
+	--bg-tertiary: #131b19;
+
+	--fill-primary: rgba(239, 178, 30, 0.18);
+	--fill-secondary: rgba(239, 178, 30, 0.13);
+	--fill-tertiary: rgba(239, 178, 30, 0.09);
+	--fill-quaternary: rgba(239, 178, 30, 0.06);
+
+	--separator: rgba(84, 84, 88, 0.65);
+	--separator-opaque: #38383a;
+
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.3);
+	--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.4);
+	--shadow-lg:
+		0 4px 16px rgba(0, 0, 0, 0.4), 0 8px 32px rgba(0, 0, 0, 0.5),
+		0 16px 48px rgba(0, 0, 0, 0.3);
+
+	--accent-dark: #f5c54a;
+	--black: 240, 247, 250;
+	--gray: 150, 165, 175;
+	--gray-dark: 205, 218, 224;
+	--gray-light: 40, 48, 52;
+}
+
+/* ============================================================
+   2. RESET & BASE
+   ============================================================ */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	font-size: 16px;
+	-webkit-text-size-adjust: 100%;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+	scroll-behavior: smooth;
+}
+
 body {
-	font-family: var(--font-atkinson);
+	font-family: var(--font-sans);
+	font-size: var(--text-body);
+	font-weight: var(--weight-regular);
+	line-height: var(--leading-relaxed);
+	font-synthesis: none;
+	color: var(--label-primary);
+	background-color: var(--bg-primary);
 	margin: 0;
 	padding: 0;
-	text-align: left;
-	background: linear-gradient(var(--gray-gradient)) no-repeat;
-	background-size: 100% 600px;
-	word-wrap: break-word;
 	overflow-wrap: break-word;
-	color: rgb(var(--gray-dark));
-	font-size: 20px;
-	line-height: 1.7;
+	word-wrap: break-word;
+	transition: background-color var(--duration-fast) var(--ease-out);
 }
-main {
-	width: 720px;
-	max-width: calc(100% - 2em);
-	margin: auto;
-	padding: 3em 1em;
-}
+
+/* ============================================================
+   3. TYPOGRAPHY
+   ============================================================ */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
-	line-height: 1.2;
+	margin: 0 0 var(--space-4) 0;
+	font-family: var(--font-sans);
+	font-weight: var(--weight-bold);
+	line-height: var(--leading-tight);
+	letter-spacing: var(--tracking-tight);
+	color: var(--label-primary);
 }
 h1 {
-	font-size: 3.052em;
+	font-size: var(--text-large-title);
 }
 h2 {
-	font-size: 2.441em;
+	font-size: var(--text-title-1);
 }
 h3 {
-	font-size: 1.953em;
+	font-size: var(--text-title-2);
 }
 h4 {
-	font-size: 1.563em;
+	font-size: var(--text-title-3);
+	font-weight: var(--weight-semibold);
 }
 h5 {
-	font-size: 1.25em;
+	font-size: var(--text-headline);
+	font-weight: var(--weight-semibold);
 }
-strong,
-b {
-	font-weight: 700;
+h6 {
+	font-size: var(--text-callout);
+	font-weight: var(--weight-semibold);
 }
+
+p {
+	margin: 0 0 var(--space-4) 0;
+	color: var(--label-primary);
+}
+
 a {
-	color: var(--accent);
+	color: var(--color-link);
+	text-decoration: none;
+	transition: opacity var(--duration-fast) var(--ease-out);
 }
 a:hover {
-	color: var(--accent);
+	opacity: 0.75;
 }
-p {
-	margin-bottom: 1em;
+
+strong,
+b {
+	font-weight: var(--weight-semibold);
 }
-.prose p {
-	margin-bottom: 2em;
+em,
+i {
+	font-style: italic;
 }
-textarea {
+small {
+	font-size: var(--text-footnote);
+}
+
+/* ============================================================
+   4. LAYOUT
+   ============================================================ */
+main {
 	width: 100%;
-	font-size: 16px;
+	max-width: var(--max-width-content);
+	margin: 0 auto;
+	padding: var(--space-10) var(--space-4) var(--space-16);
 }
-input {
-	font-size: 16px;
-}
-table {
-	width: 100%;
-}
-img {
+
+img,
+video {
 	max-width: 100%;
 	height: auto;
-	border-radius: 8px;
+	border-radius: var(--radius-lg);
 }
+
+/* ============================================================
+   5. INTERACTIVE ELEMENTS
+   ============================================================ */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--text-callout);
+}
+th {
+	font-weight: var(--weight-semibold);
+	text-align: left;
+	padding: var(--space-3) var(--space-4);
+	border-bottom: 1px solid var(--separator-opaque);
+	color: var(--label-secondary);
+	font-size: var(--text-footnote);
+	letter-spacing: var(--tracking-wide);
+	text-transform: uppercase;
+}
+td {
+	padding: var(--space-3) var(--space-4);
+	border-bottom: 1px solid var(--separator);
+}
+
+blockquote {
+	margin: var(--space-6) 0;
+	padding: var(--space-2) 0 var(--space-2) var(--space-5);
+	border-left: 3px solid var(--color-accent);
+	background: transparent;
+	color: var(--label-secondary);
+	font-size: var(--text-callout);
+}
+blockquote p:last-child {
+	margin-bottom: 0;
+}
+
+hr {
+	border: none;
+	border-top: 1px solid var(--separator);
+	margin: var(--space-8) 0;
+}
+
+textarea,
+input,
+select {
+	font-family: var(--font-sans);
+	font-size: var(--text-body);
+}
+
+/* Inline + block code (Astro/Shiki default highlighting) */
 code {
-	padding: 2px 5px;
-	background-color: rgb(var(--gray-light));
-	border-radius: 2px;
+	font-family: var(--font-mono);
+	font-size: 0.9em;
+	padding: 0.15em 0.4em;
+	background-color: var(--fill-tertiary);
+	color: var(--label-primary);
+	border-radius: var(--radius-xs);
 }
 pre {
-	padding: 1.5em;
-	border-radius: 8px;
+	padding: var(--space-5);
+	border-radius: var(--radius-md);
+	overflow-x: auto;
+	border: 1px solid var(--separator);
 }
 pre > code {
 	all: unset;
+	font-family: var(--font-mono);
 }
-blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
-	margin: 0;
-	font-size: 1.333em;
+
+/* ============================================================
+   6. PROSE (post body)
+   ============================================================ */
+.prose {
+	font-size: clamp(1rem, 0.99rem + 0.04vw, 1.0625rem);
+	line-height: 1.76;
+	color: var(--label-primary);
 }
-hr {
-	border: none;
-	border-top: 1px solid rgb(var(--gray-light));
+.prose > * + * {
+	margin-block-start: var(--space-6);
 }
-@media (max-width: 720px) {
-	body {
-		font-size: 18px;
-	}
-	main {
-		padding: 1em;
-	}
+.prose p,
+.prose li {
+	line-height: 1.76;
+}
+.prose h1,
+.prose h2,
+.prose h3 {
+	scroll-margin-top: calc(var(--nav-height) + var(--space-6));
+	text-wrap: pretty;
+}
+.prose h1 {
+	font-size: var(--text-title-1);
+	margin-block-start: var(--space-12);
+}
+.prose h2 {
+	font-size: var(--text-title-2);
+	margin-block-start: var(--space-12);
+}
+.prose h3 {
+	font-size: var(--text-title-3);
+	margin-block-start: var(--space-8);
+}
+.prose ul,
+.prose ol {
+	padding-left: var(--space-6);
+}
+.prose li + li {
+	margin-block-start: var(--space-2);
+}
+.prose li::marker {
+	color: var(--color-accent);
+}
+.prose a {
+	color: var(--color-accent);
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+	text-underline-offset: 3px;
+	transition: text-decoration-color var(--duration-fast) var(--ease-out);
+}
+.prose a:hover {
+	text-decoration-color: var(--color-accent);
+	opacity: 1;
+}
+.prose img {
+	display: block;
+	margin-inline: auto;
+	border: 1px solid var(--separator);
+}
+
+/* ============================================================
+   7. UTILITIES
+   ============================================================ */
+
+/* Block transitions during theme init to prevent FOUC */
+.no-transitions,
+.no-transitions *,
+.no-transitions *::before,
+.no-transitions *::after {
+	transition: none !important;
+}
+
+/* Skip-to-content link */
+.skip-link {
+	position: fixed;
+	top: 0;
+	left: var(--space-4);
+	z-index: 9999;
+	padding: var(--space-2) var(--space-5);
+	background: var(--color-accent);
+	color: #fff;
+	font-size: var(--text-footnote);
+	font-weight: 600;
+	border-radius: 0 0 var(--radius-md) var(--radius-md);
+	text-decoration: none;
+	transform: translateY(calc(-100% - var(--space-2)));
+	transition: transform 150ms var(--ease-out);
+}
+.skip-link:focus {
+	outline: 2px solid #fff;
+	outline-offset: 2px;
+	transform: translateY(0);
+}
+
+:focus-visible {
+	outline-offset: 3px;
+	border-radius: var(--radius-xs);
+}
+:focus:not(:focus-visible) {
+	outline: none;
 }
 
 .sr-only {
@@ -130,12 +495,27 @@ hr {
 	height: 1px;
 	width: 1px;
 	overflow: hidden;
-	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
-	clip: rect(1px 1px 1px 1px);
-	/* maybe deprecated but we need to support legacy browsers */
 	clip: rect(1px, 1px, 1px, 1px);
-	/* modern browsers, clip-path works inwards from each corner */
 	clip-path: inset(50%);
-	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+@media (max-width: 720px) {
+	body {
+		font-size: 1.0625rem;
+	}
+	main {
+		padding: var(--space-6) var(--space-4) var(--space-12);
+	}
 }

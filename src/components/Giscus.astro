@@ -17,6 +17,7 @@ const enabled = GISCUS.repo.length > 0;
 		<section class="giscus-wrapper" data-pagefind-ignore>
 			<script
 				is:inline
+				id="giscus-script"
 				src="https://giscus.app/client.js"
 				data-repo={GISCUS.repo}
 				data-repo-id={GISCUS.repoId}
@@ -27,7 +28,7 @@ const enabled = GISCUS.repo.length > 0;
 				data-reactions-enabled="1"
 				data-emit-metadata="0"
 				data-input-position="bottom"
-				data-theme="preferred_color_scheme"
+				data-theme="light"
 				data-lang={lang}
 				crossorigin="anonymous"
 				async
@@ -36,8 +37,48 @@ const enabled = GISCUS.repo.length > 0;
 	)
 }
 
+{
+	enabled && (
+		<script is:inline>
+			(function () {
+				const giscusTheme = () =>
+					document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+
+				// 1) 최초 로드 시: 현재 테마를 giscus 스크립트 속성에 반영
+				//    (client.js가 async로 늦게 실행되므로 그 전에 올바른 값을 심어둔다)
+				const scriptEl = document.getElementById('giscus-script');
+				if (scriptEl) scriptEl.setAttribute('data-theme', giscusTheme());
+
+				// 2) iframe이 뜬 뒤 테마가 바뀌면 postMessage로 알려준다
+				const sendTheme = () => {
+					const iframe = document.querySelector('iframe.giscus-frame');
+					if (!iframe || !iframe.contentWindow) return;
+					iframe.contentWindow.postMessage(
+						{ giscus: { setConfig: { theme: giscusTheme() } } },
+						'https://giscus.app',
+					);
+				};
+
+				const observer = new MutationObserver(sendTheme);
+				observer.observe(document.documentElement, {
+					attributes: true,
+					attributeFilter: ['data-theme'],
+				});
+
+				// giscus가 준비됐다고 알려오면 현재 테마로 한 번 더 동기화
+				window.addEventListener('message', (event) => {
+					if (event.origin !== 'https://giscus.app') return;
+					if (event.data && event.data.giscus) sendTheme();
+				});
+			})();
+		</script>
+	)
+}
+
 <style>
 	.giscus-wrapper {
-		margin-top: 3rem;
+		margin-top: var(--space-12);
+		padding-top: var(--space-8);
+		border-top: 1px solid var(--separator);
 	}
 </style>

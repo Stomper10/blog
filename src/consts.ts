@@ -3,8 +3,7 @@
 
 import type { Lang } from './i18n/ui';
 
-// TODO: 본인 이름/사이트명으로 변경
-export const SITE_TITLE = 'My Digital Home';
+export const SITE_TITLE = 'Home Plate';
 
 export const SITE_DESCRIPTION: Record<Lang, string> = {
 	ko: '연구와 일상이 공존하는 디지털 홈',

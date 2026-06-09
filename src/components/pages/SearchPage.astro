@@ -36,3 +36,35 @@ const koTranslations = {
 		}}
 	/>
 </BaseLayout>
+
+<style is:global>
+	/* Pagefind UI가 우리 디자인 토큰(라이트/다크)을 따라가도록 매핑한다.
+	   클래스를 두 번 적어 Pagefind 기본 CSS(.pagefind-ui)보다 우선순위를 높인다. */
+	.pagefind-ui.pagefind-ui {
+		--pagefind-ui-primary: var(--color-accent);
+		--pagefind-ui-text: var(--label-primary);
+		--pagefind-ui-background: var(--bg-primary);
+		--pagefind-ui-border: var(--separator);
+		--pagefind-ui-tag: var(--fill-tertiary);
+		--pagefind-ui-border-width: 1px;
+		--pagefind-ui-border-radius: var(--radius-md);
+		--pagefind-ui-font: var(--font-sans);
+	}
+	.pagefind-ui .pagefind-ui__search-input {
+		color: var(--label-primary);
+		background-color: var(--fill-quaternary);
+	}
+	.pagefind-ui .pagefind-ui__result {
+		border-top: 1px solid var(--separator);
+	}
+	.pagefind-ui .pagefind-ui__result-link {
+		color: var(--label-primary);
+	}
+	.pagefind-ui .pagefind-ui__result-excerpt {
+		color: var(--label-secondary);
+	}
+	.pagefind-ui mark {
+		background-color: color-mix(in srgb, var(--color-accent) 22%, transparent);
+		color: var(--label-primary);
+	}
+</style>

@@ -30,16 +30,21 @@ const href = Astro.props.translationUrl ?? symmetricPath;
 <style>
 	.lang-toggle {
 		display: inline-block;
-		padding: 0.25em 0.75em;
-		border: 1px solid rgb(var(--gray-light));
-		border-radius: 999px;
-		font-size: 0.85em;
-		color: rgb(var(--gray-dark));
+		padding: 0.2em 0.7em;
+		border: 1px solid var(--separator);
+		border-radius: var(--radius-full);
+		font-size: var(--text-caption-1);
+		font-weight: var(--weight-medium);
+		color: var(--label-secondary);
 		text-decoration: none;
 		white-space: nowrap;
+		transition:
+			border-color var(--duration-fast) var(--ease-out),
+			color var(--duration-fast) var(--ease-out);
 	}
 	.lang-toggle:hover {
-		border-color: var(--accent);
-		color: var(--accent);
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+		opacity: 1;
 	}
 </style>
