@@ -8,7 +8,7 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://blog.jwy4888.workers.dev',
+	site: 'https://blog.wonyoungjang.workers.dev',
 	// 한국어가 기본(프리픽스 없음), 영어는 /en/ 아래로 라우팅된다.
 	// ko: /notes/foo  ↔  en: /en/notes/foo
 	i18n: {
