@@ -50,7 +50,7 @@ export async function getPosts(collection: PostCollection, lang: Lang): Promise<
 
 /**
  * 같은 translationKey를 가진 반대 언어 버전의 URL.
- * 짝이 (아직) 없으면 반대 언어의 섹션 인덱스로 폴백한다 — 번역 검수 전에 한쪽만 먼저
+ * 짝이 (아직) 없거나 초안이면 반대 언어의 섹션 인덱스로 폴백한다 — 번역 검수 전에 한쪽만 먼저
  * 배포돼도 토글이 깨지지 않게 하기 위함.
  */
 export async function getTranslationUrl(
@@ -62,6 +62,7 @@ export async function getTranslationUrl(
 		collection,
 		(candidate) =>
 			entryLang(candidate) === target &&
+			!candidate.data.draft &&
 			candidate.data.translationKey === entry.data.translationKey,
 	);
 	return pair[0] ? postUrl(collection, pair[0]) : localizePath(`/${collection}/`, target);

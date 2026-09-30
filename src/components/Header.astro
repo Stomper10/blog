@@ -30,7 +30,10 @@ const navItems = [
 	<nav class="nav-inner">
 		<a class="nav-logo" href={localizePath('/', lang)}>{SITE_TITLE}</a>
 		<div class="nav-right">
-			<div class="nav-links">
+			<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
+				{lang === 'ko' ? '메뉴' : 'Menu'}
+			</button>
+			<div class="nav-links" id="primary-navigation">
 				{navItems.map((item) => <HeaderLink href={localizePath(item.href, lang)}>{item.label}</HeaderLink>)}
 			</div>
 			<div class="nav-actions">
@@ -57,6 +60,26 @@ const navItems = [
 			const header = document.querySelector('.site-header');
 			if (!(header instanceof HTMLElement) || header.dataset.scrollReady === 'true') return;
 			header.dataset.scrollReady = 'true';
+			const menuToggle = header.querySelector('.menu-toggle');
+			const closeMenu = () => {
+				header.classList.remove('menu-open');
+				menuToggle?.setAttribute('aria-expanded', 'false');
+			};
+			menuToggle?.addEventListener('click', () => {
+				const open = header.classList.toggle('menu-open');
+				menuToggle.setAttribute('aria-expanded', String(open));
+			});
+			document.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape' && header.classList.contains('menu-open')) {
+					closeMenu();
+					menuToggle?.focus();
+				}
+			});
+			document.addEventListener('click', (event) => {
+				if (event.target instanceof Node && !header.contains(event.target)) closeMenu();
+			});
+			const mobile = matchMedia('(max-width: 800px)');
+			mobile.addEventListener('change', closeMenu);
 
 			let lastY = window.scrollY;
 			let ticking = false;
@@ -66,7 +89,7 @@ const navItems = [
 				const delta = currentY - lastY;
 				header.classList.toggle('is-scrolled', currentY > 8);
 
-				if (currentY < 24) {
+				if (currentY < 24 || header.classList.contains('menu-open')) {
 					header.classList.remove('is-hidden');
 				} else if (delta > 8 && currentY > 96) {
 					header.classList.add('is-hidden');
@@ -154,6 +177,7 @@ const navItems = [
 		gap: var(--space-4);
 	}
 	.nav-links :global(a) {
+		white-space: nowrap;
 		font-size: var(--text-subheadline);
 		font-weight: var(--weight-medium);
 		color: var(--label-secondary);
@@ -183,18 +207,59 @@ const navItems = [
 		color: var(--label-primary);
 		opacity: 1;
 	}
-	@media (max-width: 720px) {
+	.menu-toggle {
+		display: none;
+		font: inherit;
+		font-size: var(--text-footnote);
+		color: var(--label-primary);
+		background: transparent;
+		border: 1px solid var(--separator);
+		border-radius: var(--radius-md);
+		min-height: 36px;
+		padding: 0 var(--space-2);
+		cursor: pointer;
+	}
+	@media (max-width: 800px) {
 		.nav-inner {
 			padding: 0 var(--space-4);
 		}
 		.nav-right {
-			gap: var(--space-3);
+			gap: var(--space-1);
+			flex-shrink: 0;
+		}
+		.menu-toggle {
+			display: inline-flex;
+			align-items: center;
 		}
 		.nav-links {
-			gap: var(--space-3);
+			display: none;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			padding: var(--space-3) var(--space-4);
+			background: var(--bg-primary);
+			border-bottom: 1px solid var(--separator);
+			box-shadow: var(--shadow-sm);
+			gap: var(--space-2);
+		}
+		.menu-open .nav-links {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 		.nav-links :global(a) {
-			font-size: var(--text-footnote);
+			font-size: var(--text-subheadline);
+			padding: var(--space-2);
+			min-height: 44px;
+		}
+	}
+	@media (max-width: 360px) {
+		.nav-inner {
+			padding: 0 var(--space-2);
+			gap: var(--space-1);
+		}
+		.nav-logo {
+			font-size: var(--text-callout);
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
